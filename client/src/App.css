@@ -1,0 +1,73 @@
+#logo{
+    width: 100%;
+    height: 100%;
+}
+#lownavBar{
+    background-color: white;
+    justify-content: center;
+}
+.carousel-inner img {
+    width: 100%;
+    height: 43rem;
+} 
+.carousel-item{
+    width: 100%;
+    height: 65%;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+.GridMenuContainer{
+    padding: 2rem;
+}
+.containerPage{
+    display: flex;
+}
+.containerSides{
+    width: 50%;
+}
+@media (max-width: 400px) {
+    .containerPage{
+        display: block;
+        width: 100%;
+    }
+    .containerSides{
+        width: 100%;
+    }
+}
+#AddToCard{
+    display: inline-block;
+}
+#Card{
+    display: block;
+}
+#doNotShowAddr{
+    display: none;
+}
+#formModifData{
+    display: inline-block;
+    margin: 2rem;
+    border: 0.1rem grey solid;
+    padding: 2rem;
+    max-width: 453px;
+}
+.inputFields{
+    margin-top: 1.5rem;
+    width: 210px;
+}
+.labelForm{
+    width: 7.5rem;
+}
+.addrContainer{
+    max-width: 380px;
+    margin: 2rem;
+    border: 0.1rem grey solid;
+    padding: 2rem;
+
+
+}
+#addrChoose{
+    background-color: white;
+    border : 0.2rem red solid;
+}
