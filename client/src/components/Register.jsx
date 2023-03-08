@@ -42,7 +42,7 @@ export default function Login() {
                 state: data.state
             },
             password: data.password
-        },
+        }, {withCredentials:true }
         )
         .then( (response) => {
             //alert('afae')

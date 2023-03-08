@@ -39,14 +39,14 @@ const [loginNotOK, setLoginNotOK] = useState(false);
 const {isLoggedIn, setIsLoggedIn, cartPressed, setCartPressed, userID, setUserID} = useContext(userAuth);
 //FUNCTIONS DECLARATION
 
-const onSubmit = (data,e) => {
-    e.preventDefault();
-    console.log(data);
+const onSubmit = (data, event) => {
+    console.log('on submit login handler', data, event);
+    event.preventDefault();
     axios.post(`${config.url}/api/pizzapp/login`, 
     {
         email: data.email,
         password: data.password
-    }, {withCredentials: true}
+    }, {withCredentials:true }
     )
     .then( (response) => {
         setLoginOK(true);
@@ -116,7 +116,7 @@ useEffect( ()=>{
                     <Typography component="h1" variant="h5">
                         Iniciar sesión
                     </Typography>
-                    <Box component="form" noValidate onSubmit={ handleSubmit( (e, data) => onSubmit(data, e))}  sx={{ mt: 1 }}>
+                    <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}  sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         required
