@@ -41,11 +41,11 @@ const {isLoggedIn, setIsLoggedIn, cartPressed, setCartPressed, userID, setUserID
 
 const onSubmit = (data) => {
     console.log(data);
-    axios.post(`${config.url}/api/pizzapp/login`, 
+    axios.post('http://localhost:8000/api/pizzapp/login', 
     {
         email: data.email,
         password: data.password
-    }, {withCredentials:true }
+    }, {withCredentials: true}
     )
     .then( (response) => {
         setLoginOK(true);
