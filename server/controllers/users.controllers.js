@@ -36,7 +36,7 @@ module.exports = {
                 const userToken = jwt.sign({_id:user._id}, SECRET)
                 console.log('loginUser: pass valido', userToken)
 		console.log('check SECRET loginUser', SECRET)    
-                res.status(201).cookie('userToken', userToken, {httpOnly:false, expires:new Date(Date.now() + 1800000)}).json({successMessage:"User login OK ", id: user._id})
+                res.status(201).cookie('userToken', userToken, {httpOnly:true, expires:new Date(Date.now() + 1800000)}).json({successMessage:"User login OK ", id: user._id})
             }
         }catch(error){
 	    console.log('loginUser catch:', error);
