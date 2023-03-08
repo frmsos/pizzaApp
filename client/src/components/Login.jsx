@@ -42,7 +42,7 @@ const {isLoggedIn, setIsLoggedIn, cartPressed, setCartPressed, userID, setUserID
 const onSubmit = (data,e) => {
     e.preventDefault();
     console.log(data);
-    axios.post('http://localhost:8000/api/pizzapp/login', 
+    axios.post(`${config.url}/api/pizzapp/login`, 
     {
         email: data.email,
         password: data.password
