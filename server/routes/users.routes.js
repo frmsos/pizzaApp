@@ -12,7 +12,7 @@ module.exports = (app) =>{
     app.put('/api/pizzapp/user/refactor/:id/', authenticate, UserController.updateUserNoPass)
     app.put('/api/pizzapp/user/update/:id/', authenticate, UserController.updateUserByID)
     app.get('/api/pizzapp/auth', authenticate, UserController.getUser)
-    pp.get('/api/pizzapp/ver', UserController.verUser)
+    app.get('/api/pizzapp/ver', UserController.verUser)
     
     
     
