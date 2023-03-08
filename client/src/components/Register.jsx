@@ -29,7 +29,8 @@ export default function Login() {
     const {setIsLoggedIn, isLoggedIn , setUserID, userID} = useContext(userAuth);
     ////////
     //FUNCTIONS DECLARATION
-    const onSubmit = (data) => {
+    const onSubmit = (data, event) => {
+        event.preventDefault();
         console.log(data);
         axios.post(`${config.url}/api/pizzapp/register`, 
         {

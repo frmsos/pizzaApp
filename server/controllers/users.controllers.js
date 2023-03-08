@@ -21,22 +21,26 @@ module.exports = {
 
     loginUser: async (req, res)=>{
         const user = await User.findOne({email:req.body.email})
-        console.log(" login user is", user )
+        console.log(" login user is and secret", SECRET )
         if(!user){
-            res.status(401).json({error: "Incorrect credentials, try again..."})
+            	console.log('loginUser: no se encuentra el user id')
+		res.status(401).json({error: "Incorrect credentials, try again..."})
         }
         try{
             const validPass = await bcrypt.compare(req.body.password, user.password )
-            //console.log(validPass, " PASSWORD VALIDA")
+            console.log('loginUser: pass valida')
             if(!validPass){
-                res.status(401).json({error: "Incorrect credentials, try again..."})
+                console.log('loginUser try: pass invalido' ,validPass);
+		res.status(401).json({error: "Incorrect credentials, try again..."})
             }else{
                 const userToken = jwt.sign({_id:user._id}, SECRET)
-                console.log(userToken)
+                console.log('loginUser: pass valido', userToken)
+		console.log('check SECRET loginUser', SECRET)    
                 res.status(201).cookie('userToken', userToken, {httpOnly:false, expires:new Date(Date.now() + 1800000)}).json({successMessage:"User login OK ", id: user._id})
             }
         }catch(error){
-            res.status(400).json({error: "Incorrect credentials, try again..."})
+	    console.log('loginUser catch:', error);
+            res.status(400).json({error: error})
         }
     },
     logOutUser:(req,res)=>{
