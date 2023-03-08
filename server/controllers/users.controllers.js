@@ -106,6 +106,12 @@ module.exports = {
     },
     getUser: (req, res) => {
         console.log('test')
+    },
+    verUser: (req, res) =>{
+ 
+        res.status(201).json( {user : 'test successful' })
+
+
     }
     
 }        
