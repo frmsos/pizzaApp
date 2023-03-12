@@ -11,6 +11,7 @@ import Register from './components/Register';
 import Checkout from './components/Checkout';
 import Account from './components/Account';
 import Order from './components/Order';
+import Gmap from './components/Gmap';
 import { userAuth } from './contexts/userAuth';
 import ProtectedRoutes from './components/ProtectedRoutes2';
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
               <Route path="/register" element={<Register itemCount={itemCount} setItemCount={setItemCount} requestItem={requestItem} setRequestItem={setRequestItem}   />}>  </Route> 
               <Route path="*" element={<Home itemCount={itemCount} setItemCount={setItemCount} requestItem={requestItem} setRequestItem={setRequestItem}   />}>  </Route> 
               <Route path="/home" element={<Home itemCount={itemCount} setItemCount={setItemCount} requestItem={requestItem} setRequestItem={setRequestItem}   />}>  </Route> 
+              <Route path="/map" element={<Gmap itemCount={itemCount} setItemCount={setItemCount} requestItem={requestItem} setRequestItem={setRequestItem}   />}>  </Route> 
               <Route element={<ProtectedRoutes itemCount={itemCount} setItemCount={setItemCount} requestItem={requestItem} setRequestItem={setRequestItem}/>}>
                 <Route path="/account" element={<Account itemCount={itemCount} setItemCount={setItemCount} requestItem={requestItem} setRequestItem={setRequestItem}  />}>  </Route>
                 <Route path="/order" element={<Order itemCount={itemCount} setItemCount={setItemCount} requestItem={requestItem} setRequestItem={setRequestItem}  />}>  </Route>
