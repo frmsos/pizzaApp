@@ -84,9 +84,9 @@ const Checkout = (props) => {
 
     const handlePlaceOrder = ( e ) =>{
         e.preventDefault();
-        console.log('place order', cart)
+        console.log('place order', cart, isDelivery)
 
-        if(isAddr){
+        if(isAddr || !isDelivery){
             axios.post(`${config.url}/api/pizzapp/order`, 
             {
                 userID: userID,
