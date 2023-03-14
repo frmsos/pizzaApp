@@ -148,7 +148,6 @@ const OrderItems = (props) => {
 
     return (
         <div>
-            OrderItems
             <Typography variant='h3' sx={{fontWeight:'bold', m:2} }> Nuevo Pedido </Typography>
                                 <Autocomplete
                                     disablePortal

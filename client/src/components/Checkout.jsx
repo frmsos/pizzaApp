@@ -12,6 +12,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import {  useNavigate } from 'react-router-dom';
 import config from './config';
+import Address from './Address';
+import Places from './Gmap';
 
 
 //FUNCTIONS DECLARATION
@@ -37,6 +39,7 @@ const Checkout = (props) => {
     const [open, setOpen] = useState(false);
     const [placeOrderOK, setPlaceOrderOK] = useState(false);
     const [placeOrderNotOK, setPlaceOrderNotOK] = useState(false);
+    const [iniAddr, setIniAddr] = useState(false);
     const navigate = useNavigate();
 
     //funciones que manejan el cuadro de dialogo que se abre si es que no se completan los campos obligatorios.
@@ -64,6 +67,7 @@ const Checkout = (props) => {
                 setOpMode('edit');
                 setAddrID(addressID);
                 setVectorAddrIndex(index);
+                console.log('checkout compn addrid is',addrID)
             }
         }
 
@@ -80,7 +84,7 @@ const Checkout = (props) => {
 
     const handlePlaceOrder = ( e ) =>{
         e.preventDefault();
-        console.log('place order', cart.items)
+        console.log('place order', cart)
 
         if(isAddr){
             axios.post(`${config.url}/api/pizzapp/order`, 
@@ -119,28 +123,57 @@ const Checkout = (props) => {
     //recibe el evento, la direccion elegida y el indice del vector de direcciones donde se ubica.
     const handleChooseAddr = (e, chooseAddr, index) =>{
         e.preventDefault();
-        console.log('choose addr', chooseAddr);
+        console.log('choose addr', chooseAddr.street);
+        if(chooseAddr.street !== undefined && chooseAddr.street !== null){
         //Formar vector final de orden
         setCart( {...cart, address: chooseAddr}  )
         console.log('cart is', cart)
         // se actualiza un estado para que indica que se eligio una direccion y se guarda el indice de la dir elegida.
         setIsAddr(true); //para validar que no se envie una orden con el campo de direcciones vacio
         setIndexAddr(index);
+        }
+        else{
+            console.log('false is addr')
+            setIsAddr(false);
+        }
         
     }
+
+    const handleDelAddr = (e, addrID) =>{
+        e.preventDefault();
+        console.log('handle del addr')
+        axios.post(`${config.url}/api/pizzapp/users/del/address/${userID}/${addrID}`,{withCredentials : true}) 
+        .then(response => setAddresses(response.data.user.addresses))
+        .catch(error => console.log('error on edit page submit', error));
+        console.log( 'useeefecttt', addresses)
+
+    }
+
+
     // valida si la orden es del tipo delievery o carryout
     isDelivery = (cart.typeOrder === 'Delivery' )
     console.log('is del value', cart, isDelivery);
     useEffect( ()=> {
-        if( userID !==0){
+        if( userID !==0 ){
             axios.get(`${config.url}/api/pizzapp/users/${userID}`,{withCredentials : true}) 
-            .then(response => setAddresses(response.data.user.addresses))
+            .then(response => {
+                setAddresses(response.data.user.addresses)
+                if( response.data.user.addresses.length !==0 && response.data.user.addresses[0].street !== undefined && response.data.user.addresses[0].street !== null ){
+                    setIniAddr(true)
+                }
+                else{
+                    setIniAddr(false);
+                }
+            })
             .catch(error => console.log('error on edit page submit', error));
             console.log( 'useeefecttt', addresses)
+
+
         }
         else{
             setUserID(JSON.parse(window.localStorage.getItem('userID')))
         }
+
          // eslint-disable-next-line
     },[userID,isDelivery, cart.type]
 
@@ -191,9 +224,9 @@ const Checkout = (props) => {
                         { isDelivery ?  
                         <div>
                         <div className='containerSides'>
-                                <Box>
+                                <Box sx={{m:2}}>
                                     <Typography variant='h4' sx={{fontWeight:'bold', m:2} }> Dirección de envío </Typography>
-                                    <Typography variant='body1' sx={{fontWeight:'normal', m:2} }> Favor seleccionar una dirección de envío: </Typography>
+                                    { iniAddr ?  <Typography variant='body1' sx={{fontWeight:'normal', m:4} }> Favor seleccionar una dirección de envío: </Typography> : <span style={{color: 'red'}}> Presione Editar para agregar una direcciòn de envío</span> }
                                     {   addresses.length > 0 ? 
                                             addresses.map(  (address, index) => {
                                                 return(
@@ -202,31 +235,27 @@ const Checkout = (props) => {
                                                             <Typography variant="h5" component="div">
                                                                 {`Dirección ${index + 1}`}
                                                             </Typography>
+                                                            
                                                             <Typography variant="body2">
                                                                 Calle: {address.street}
-                                                            </Typography>
-                                                            <Typography variant="body2">
-                                                                Ciudad: {address.city}
-                                                            </Typography>
-                                                            <Typography variant="body2">
-                                                                Departamento: {address.state}
                                                             </Typography>
                                                         </CardContent>
                                                         <CardActions>
                                                             <Button size="small" onClick={e=> handleChooseAddr(e, address, index)}>Elegir</Button>
                                                             <Button size="small" onClick={e=> handleClickAddAddress(e, "edit", address._id, index)}>Editar</Button>
-                                                            <Button size="small">Quitar</Button>
+                                                            <Button size="small" onClick={e=> handleDelAddr(e, address._id)}>Quitar</Button>
                                                         </CardActions>
                                                     </Box>
                                                 )
                                             } )
                                             
                                         : null  }
-                                        <Button size="small" variant="contained" color="success" sx={{m:2}} onClick={ e=> handleClickAddAddress(e, "add")}>Añadir nueva</Button> 
+                                        {iniAddr ? <Button size="small" variant="contained" color="success" sx={{m:2}} onClick={ e=> handleClickAddAddress(e, "add")}>Añadir nueva</Button>  : null }
+                                        
                                     </Box>
                             </div>
                         <div className='containerSides' id={showAddr}>
-                            <InputAddress  showAddr={showAddr} setShowAddr={setShowAddr} opMode={opMode} addrID={addrID} vectorAddrIndex={vectorAddrIndex} addresses={addresses} userID={userID} cart={cart} setCard={setCart}/>
+                            <Address  showAddr={showAddr} setShowAddr={setShowAddr} opMode={opMode} addrID={addrID} vectorAddrIndex={vectorAddrIndex} addresses={addresses} userID={userID} cart={cart} setCard={setCart}/>
                         </div>
                     </div>
                     : null}
@@ -241,12 +270,6 @@ const Checkout = (props) => {
                                 </Typography>
                                 <Typography variant="body2">
                                     Calle: {cart.address.street}
-                                </Typography>
-                                <Typography variant="body2">
-                                    Ciudad: {cart.address.city}
-                                </Typography>
-                                <Typography variant="body2">
-                                    Departamento: {cart.address.state}
                                 </Typography>
                             </CardContent>
                         </Box>

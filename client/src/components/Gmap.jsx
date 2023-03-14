@@ -1,6 +1,6 @@
 
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import usePlacesAutocomplete, {
     getGeocode,
@@ -14,16 +14,75 @@ import usePlacesAutocomplete, {
     ComboboxOption,
 } from "@reach/combobox";
 import "@reach/combobox/styles.css";
-import Navbar from './Navbar';
-import {Avatar, Button, CssBaseline, TextField,  Paper, Box, Grid, Typography, IconButton, Alert, Stack, Card, CardContent} from '@mui/material';
+import {Button, Box, Card, CardContent} from '@mui/material';
+import axios from "axios";
+import config from "./config";
 
-export default function Places() {
+export default function Gmap(props) {
+    const [center,setCenter] = useState({lat:-25.282508980118497, lng:-57.566180347549604});
+    const [selected, setSelected] = useState(null);
+    const [addr, setAddr] = useState(null);
+    const {isEditMode} = props;
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: "AIzaSyBDFQYW8P-FqcBBtncBaqwP8V8nKy5Ysf8",
         libraries: ["places"],
     });
+
+
+
+
+    const onClick = async(e) =>{
+        e.preventDefault();
+        const userID = await JSON.parse(window.localStorage.getItem('userID'));
+        console.log('place selected', addr, selected, isEditMode, userID, props.addrID)
+        if( !isEditMode){
+            console.log('oi')
+            axios.post(`${config.url}/api/pizzapp/users/addresses/${userID}`, 
+            {
+                addresses: {
+                    street: addr,
+                    lat: selected.lat,
+                    lng: selected.lng
+                },
+            }, {withCredentials:true }
+            )
+            .then( (response) => {
+                console.log('onsub', response.data);
+                props.setShowAddr("doNotShowAddr")
+                //alert('afae')
+
+            } )
+            .catch( (errorMsg) =>{
+                console.log('errrrorrr log', errorMsg)
+            }  )
+        }
+        else{
+            axios.put(`${config.url}/api/pizzapp/users/address/${userID}/${props.addrID}`, 
+            {
+                addresses: {
+                    street: addr,
+                    lat: selected.lat,
+                    lng: selected.lng
+                },
+            }, {withCredentials:true }
+            )
+            .then( (response) => {
+                console.log('onsub', response.data);
+                props.setShowAddr("doNotShowAddr")
+                //alert('afae')
+
+            } )
+            .catch( (errorMsg) =>{
+                console.log('errrrorrr log', errorMsg)
+            }  )
+        }
+    }
+
+
+
+
     
-    const PlacesAutocomplete = ({ setSelected, setCenter, setAddr, addr } ) => {
+    const PlacesAutocomplete = () => {
         const {
             ready,
             value,
@@ -39,9 +98,25 @@ export default function Places() {
             const { lat, lng } = await getLatLng(results[0]);
             setSelected({ lat, lng });
             setCenter({lat:lat, lng:lng})
-            setAddr(address)
-            console.log('address is: ', addr, lat, lng)
+            setAddr(address);
+            console.log('address is: ', selected);
         };
+
+        useEffect( ()=>{
+            console.log('in useff in gmap component', isEditMode)
+            if(isEditMode){
+                console.log('gmap is edit mode', isEditMode, (props.addresses[props.vectorAddrIndex].lat),  (props.addresses[props.vectorAddrIndex].lng));
+                //setAddr(props.addresses[props.vectorAddrIndex].street)
+               // 
+                if(!props.flag){
+                    setCenter({lat:props.addresses[props.vectorAddrIndex].lat, lng:props.addresses[props.vectorAddrIndex].lng});
+                    setSelected({lat:props.addresses[props.vectorAddrIndex].lat, lng:props.addresses[props.vectorAddrIndex].lng});
+                    setAddr(props.addresses[props.vectorAddrIndex].street)
+                    props.setFlag(true);
+                }
+
+            }
+        },[])
     
         return (
             <Combobox onSelect={handleSelect} style={{padding:10, display:'block'}}>
@@ -65,10 +140,11 @@ export default function Places() {
         );
         };
 
+
         function Map() {
-            const [center,setCenter] = useState({lat:-25.282508980118497, lng:-57.566180347549604});
-            const [selected, setSelected] = useState(null);
-            const [addr, setAddr] = useState(null);
+            
+
+            //props.setFinalAddr(addr)
         
             return (
                 
@@ -79,14 +155,16 @@ export default function Places() {
                         </h1>
                         <div>
                             <div className="places-container" style={{display:'block'}}>
-                                <PlacesAutocomplete setSelected={setSelected} setCenter={setCenter}  setAddr={setAddr} addr={addr} />
+                                <PlacesAutocomplete/>
                             </div>
                             <GoogleMap
                                 zoom={15}
                                 center={center}
                                 mapContainerClassName="map-container"
                             >
-                                {selected && <Marker position={selected} />}
+                                
+                            {selected && <Marker position={selected}  />}
+                            
                             </GoogleMap>
                         </div>
                     </div>
@@ -101,10 +179,12 @@ export default function Places() {
                             </CardContent>
                         </Card>
                     </Box>
+                    <Button  variant="contained" color="success" onClick={e=>onClick(e)} size="small" sx={{m:2}} > { isEditMode ? 'Modificar' : 'Añadir'  }</Button> 
                     </div>
                 </div>
             );
             }
+        
         
 
 

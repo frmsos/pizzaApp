@@ -27,12 +27,12 @@ module.exports = {
         }
         try{
             const validPass = await bcrypt.compare(req.body.password, user.password )
-            //console.log(validPass, " PASSWORD VALIDA")
+            console.log(validPass, " PASSWORD VALIDA")
             if(!validPass){
                 res.status(401).json({error: "Incorrect credentials, try again..."})
             }else{
                 const userToken = jwt.sign({_id:user._id}, SECRET)
-                console.log(userToken)
+                console.log('check SECRET loginUser', SECRET)
                 res.status(201).cookie('userToken', userToken, {httpOnly:false, expires:new Date(Date.now() + 1800000)}).json({successMessage:"User login OK ", id: user._id})
             }
         }catch(error){
@@ -108,10 +108,21 @@ module.exports = {
         console.log('test')
     },
     verUser: (req, res) =>{
+        console.log('validation getUser func')
  
         res.status(201).json( {user : 'test successful' })
-
-
-    }
+    },
+    deleteAddressbyID: async (req, res)=>{
+        console.log('delete add by id', req.params.id);
+        const user = await User.findOneAndUpdate(  
+        { _id: req.params.id},
+        { $pull: {addresses:{ _id:req.params.addrid } }}
+        )
+        try{
+            res.status(201).json( {user : user })
+        }
+        catch(error){
+            res.status(400).json({error: error})
+        }},
     
 }        

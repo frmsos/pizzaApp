@@ -25,16 +25,12 @@ const UserSchema = new mongoose.Schema({
             {
                 street: {
                     type: String,
-                    required: [true, "Debe ingresar direccion de residencia"],
-                    minlength: [4, "Su Direccion debe tener como minimo 4 caracteres o mas"]
                 },
-                city: {
-                    type: String,
-                    required: [true, "Debe ingresar su ciudad de residencia"]
+                lat: {
+                    type: Number,
                 },
-                state: {
-                    type: String,
-                    required: [true, "Debe ingresar su departamento de residencia"]
+                lng: {
+                    type: Number,
                 }
             }
         ],
@@ -48,6 +44,7 @@ const UserSchema = new mongoose.Schema({
 //middleware
 UserSchema.pre('save', async function(next){
     try{
+        UserSchema.addresses = undefined;
         const hashedPassword = await bcrypt.hash(this.password, 10)
         console.log(" HashedPassword is: ", hashedPassword)
         this.password = hashedPassword
@@ -68,6 +65,8 @@ UserSchema.pre('findOneAndUpdate', async function (next) {
         return next(err);
     }
 });
+
+
 
 
 

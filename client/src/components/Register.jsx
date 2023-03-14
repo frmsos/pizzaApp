@@ -165,46 +165,6 @@ export default function Login() {
                         <TextField
                         required
                         fullWidth
-                        id="address"
-                        label="Calle"
-                        name="street"
-                        autoComplete="street"
-                        {...register("street", { required: true, minLength: 4, maxLength: 50 })}
-                        error={!!errors?.street}                        
-                        helperText = { errors?.street ? "Ingrese una dirección válida, como mínimo de 4 caracteres" : null }
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                        required
-                        fullWidth
-                        id="city"
-                        label="Ciudad"
-                        name="city"
-                        autoComplete="city"
-                        {...register("city", { required: true, minLength: 4, maxLength: 50 })}
-                        error={!!errors?.city}                        
-                        helperText = { errors?.city ? "Ingrese una ciudad válida, como mínimo de 4 caracteres" : null }
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                    <Autocomplete
-                        disablePortal
-                        required
-                        id="combo-box-demo"
-                        options={states}
-                        sx={{ width: 300 }}
-                        renderInput={(params) => <TextField {...params} required label="Departamento" {...register("state", { required: true })}
-                        error={!!errors?.state}                        
-                        helperText = { errors?.state ? "Debe elegir una de las opciones" : null }/>}
-                        isOptionEqualToValue = { (option, value) => option.value === value.value}
-                        
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                        required
-                        fullWidth
                         name="password"
                         label="Contraseña"
                         type= {showPassword ? "text" : "password"} 

@@ -13,6 +13,10 @@ module.exports = (app) =>{
     app.put('/api/pizzapp/user/update/:id/', authenticate, UserController.updateUserByID)
     app.get('/api/pizzapp/auth', authenticate, UserController.getUser)
     app.get('/api/pizzapp/ver', UserController.verUser)
+    app.post('/api/pizzapp/users/del/address/:id/:addrid', UserController.deleteAddressbyID)
+
+
+    
     
     
     
