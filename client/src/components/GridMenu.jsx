@@ -62,6 +62,9 @@ export default function GridMenu(props) {
         console.log( 'useefff gridmenu', JSON.parse(window.localStorage.getItem('requestItem')))
         if( JSON.parse(window.localStorage.getItem('requestItem')) == null ){
             window.localStorage.setItem('requestItem', JSON.stringify([]))
+        }else
+        {
+            props.setRequestItem( JSON.parse(window.localStorage.getItem('requestItem')) )
         }
 
     }, [])  

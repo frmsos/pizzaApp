@@ -4,7 +4,6 @@ import { userAuth } from '../contexts/userAuth';
 import axios from 'axios';
 import { Button,  Box,  Typography, Alert, Stack, CardActions, CardContent} from '@mui/material';
 import {useForm} from 'react-hook-form';
-import InputAddress from './InputAddress';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -13,7 +12,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import {  useNavigate } from 'react-router-dom';
 import config from './config';
 import Address from './Address';
-import Places from './Gmap';
+
 
 
 //FUNCTIONS DECLARATION
@@ -41,6 +40,7 @@ const Checkout = (props) => {
     const [placeOrderNotOK, setPlaceOrderNotOK] = useState(false);
     const [iniAddr, setIniAddr] = useState(false);
     const navigate = useNavigate();
+    const [isChanged, setIsChanged] = useState(false);
 
     //funciones que manejan el cuadro de dialogo que se abre si es que no se completan los campos obligatorios.
     const handleClickOpen = () => {
@@ -83,7 +83,7 @@ const Checkout = (props) => {
 
 
     const handlePlaceOrder = ( e ) =>{
-        e.preventDefault();
+        //e.preventDefault();
         console.log('place order', cart, isDelivery)
 
         if(isAddr || !isDelivery){
@@ -98,13 +98,12 @@ const Checkout = (props) => {
             .then( (response) => {
                 console.log('orden exitosa', response.data);
                 window.localStorage.removeItem("itemCount");
+                window.localStorage.removeItem("requestItem");
             // window.localStorage.setItem([]);
                 //para desplegar o no las alertas de exito de carga de la orden
                 setPlaceOrderOK(true);
                 setPlaceOrderNotOK(false);
                 //al hacer el pedido se limpia el local storage
-                window.localStorage.setItem('requestItem', JSON.stringify([]))
-                window.localStorage.setItem('itemCount', JSON.stringify(0))
                 setTimeout(() => { navigate('/home');}, 2500);
 
             } )
@@ -140,12 +139,19 @@ const Checkout = (props) => {
     }
 
     const handleDelAddr = (e, addrID) =>{
-        e.preventDefault();
+      //  e.preventDefault();
         console.log('handle del addr')
         axios.post(`${config.url}/api/pizzapp/users/del/address/${userID}/${addrID}`,{withCredentials : true}) 
         .then(response => setAddresses(response.data.user.addresses))
         .catch(error => console.log('error on edit page submit', error));
-        console.log( 'useeefecttt', addresses)
+        setIsChanged(!isChanged);
+    }
+
+    const handleCancel = e =>{
+        e.preventDefault();
+        window.localStorage.removeItem("itemCount");
+        window.localStorage.removeItem("requestItem");
+        setTimeout(() => { navigate('/home');}, 2500);
 
     }
 
@@ -154,6 +160,7 @@ const Checkout = (props) => {
     isDelivery = (cart.typeOrder === 'Delivery' )
     console.log('is del value', cart, isDelivery);
     useEffect( ()=> {
+        console.log('use ef in checkout')
         if( userID !==0 ){
             axios.get(`${config.url}/api/pizzapp/users/${userID}`,{withCredentials : true}) 
             .then(response => {
@@ -175,7 +182,7 @@ const Checkout = (props) => {
         }
 
          // eslint-disable-next-line
-    },[userID,isDelivery, cart.type]
+    },[userID,isDelivery, cart.type, isChanged]
 
     
 
@@ -255,7 +262,7 @@ const Checkout = (props) => {
                                     </Box>
                             </div>
                         <div className='containerSides' id={showAddr}>
-                            <Address  showAddr={showAddr} setShowAddr={setShowAddr} opMode={opMode} addrID={addrID} vectorAddrIndex={vectorAddrIndex} addresses={addresses} userID={userID} cart={cart} setCard={setCart}/>
+                            <Address  showAddr={showAddr} setShowAddr={setShowAddr} opMode={opMode} addrID={addrID} vectorAddrIndex={vectorAddrIndex} addresses={addresses} userID={userID} cart={cart} setCard={setCart} isChanged={isChanged} setIsChanged={setIsChanged}/>
                         </div>
                     </div>
                     : null}
@@ -284,7 +291,7 @@ const Checkout = (props) => {
                                 </Typography>
                             </CardContent>
                             <Button size="small" variant="contained" color="success" sx={{m:2, width: 150}} onClick={ e=> handlePlaceOrder(e)}>Pedir</Button>
-                            <Button size="small" variant="contained" color="error" sx={{m:2, width: 150}} onClick={ e=> handleClickAddAddress(e, "add")}>Cancelar pedido</Button>
+                            <Button size="small" variant="contained" color="error" sx={{m:2, width: 150}} onClick={ e=> handleCancel(e)}>Cancelar pedido</Button>
                         </Box>
 
                     </div>

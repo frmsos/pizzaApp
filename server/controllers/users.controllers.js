@@ -11,7 +11,7 @@ module.exports = {
             const newUser = await User.create(req.body);
             console.log('new usewr', newUser)
             const userToken = jwt.sign({_id:newUser._id}, SECRET)
-            res.status(201).cookie('userToken', userToken, {httpOnly:true, expires:new Date(Date.now() + 60000)})
+            res.status(201).cookie('userToken', userToken, {httpOnly:true, expires:new Date(Date.now() + 7200000)})
             .json({successMessage:"Usuario registrado ", id:newUser._id})
             //console.log("userto", userToken)
         }catch(error){
@@ -33,7 +33,7 @@ module.exports = {
             }else{
                 const userToken = jwt.sign({_id:user._id}, SECRET)
                 console.log('check SECRET loginUser', SECRET)
-                res.status(201).cookie('userToken', userToken, {httpOnly:false, expires:new Date(Date.now() + 1800000)}).json({successMessage:"User login OK ", id: user._id})
+                res.status(201).cookie('userToken', userToken, {httpOnly:false, expires:new Date(Date.now() + 7200000)}).json({successMessage:"User login OK ", id: user._id})
             }
         }catch(error){
             res.status(400).json({error: "Incorrect credentials, try again..."})

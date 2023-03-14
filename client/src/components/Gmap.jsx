@@ -32,7 +32,7 @@ export default function Gmap(props) {
 
 
     const onClick = async(e) =>{
-        e.preventDefault();
+        //e.preventDefault();
         const userID = await JSON.parse(window.localStorage.getItem('userID'));
         console.log('place selected', addr, selected, isEditMode, userID, props.addrID)
         if( !isEditMode){
@@ -48,7 +48,8 @@ export default function Gmap(props) {
             )
             .then( (response) => {
                 console.log('onsub', response.data);
-                props.setShowAddr("doNotShowAddr")
+                //props.setShowAddr("doNotShowAddr");
+                props.setIsChanged(!props.isChanged)
                 //alert('afae')
 
             } )

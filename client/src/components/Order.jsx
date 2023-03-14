@@ -78,7 +78,10 @@ const Order = (props) => {
         }
         return 0;
     }
-
+    async function fetchRequestItemAry(){
+        const reqItemtemp = await JSON.parse(window.localStorage.getItem('requestItem'));
+        props.setRequestItem(reqItemtemp)
+    }
 
     useEffect( () => {
         //IMPORTAMOS LOS VALORES ALMACENADOS EN LA DB, RELATIVOS A LOS SABORES, TAMANOS Y CRUST CON SUS COSTOS
@@ -109,6 +112,7 @@ const Order = (props) => {
             setIsLoggedIn(false);
             setCartPressed(false);
         })
+        fetchRequestItemAry();
         // eslint-disable-next-line
     }, [costoItem]  ); 
     

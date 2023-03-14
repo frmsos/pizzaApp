@@ -1,7 +1,5 @@
 import {useState, useEffect} from 'react';
 import Navbar from './Navbar';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import { useForm } from 'react-hook-form';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { useContext } from 'react';
@@ -11,7 +9,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {IconButton} from '@mui/material';
 import config from './config';
-
+import { Button,  Box,  Typography, Alert, Stack, CardActions, CardContent} from '@mui/material';
+import Address from './Address';
 
 
 
@@ -21,6 +20,14 @@ const Account = (props) => {
     const [accountData, setAccountData] = useState({firstName: "", lastName:"", email:"", password:"", addresses: []  });
     const [isPassChanged, setIsPassChanged] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [iniAddr, setIniAddr] = useState(false);
+    const [showAddr, setShowAddr] = useState("doNotShowAddr");
+    const [opMode, setOpMode] = useState(null);
+    const [addrID, setAddrID] = useState(0);
+    const [vectorAddrIndex, setVectorAddrIndex] = useState(null);
+    const [isChanged, setIsChanged] = useState(false);
+    const [addresses, setAddresses] = useState({});
+
 
     //Funcion onsubmit: se llama al presionar el boton de modificar
 
@@ -110,6 +117,38 @@ const Account = (props) => {
         setIsPassChanged(true);
     }
 
+
+    //funcion que maneja los campos de direcciones, tiene dos metodos de trabajo, si se presiona agregar o editar la direccion
+    //recibe el modo de operacion, id de la direccion que se recupera de la base de datos y el indice del map
+    const handleClickAddAddress = (e, opMode, addressID, index) =>{
+        e.preventDefault();
+        //si se desea agregar, se coloca el modo de op en add
+        setShowAddr("showAddr");
+        if(opMode === 'add'){
+            setOpMode('add');
+        }
+        else{
+            //si se desea editar, se modifica el op mode, se guarda el id de la direccion y el indice del vector de direcciones para luego reemplazarlo.
+            if(opMode === 'edit'){
+                setOpMode('edit');
+                setAddrID(addressID);
+                setVectorAddrIndex(index);
+                console.log('checkout compn addrid is',addrID)
+            }
+        }
+
+    }
+    const handleDelAddr = (e, addrID) =>{
+        //  e.preventDefault();
+        console.log('handle del addr')
+        axios.post(`${config.url}/api/pizzapp/users/del/address/${userID}/${addrID}`,{withCredentials : true}) 
+        .then(response => setAddresses(response.data.user.addresses))
+        .catch(error => console.log('error on edit page submit', error));
+        setIsChanged(!isChanged);
+    }
+
+
+
     // obtenemos la info del user
 
     useEffect( () => {
@@ -118,6 +157,12 @@ const Account = (props) => {
             .then(response => {
                 console.log('user account info get by id', response.data.user);
                 setAccountData(response.data.user);
+                if( response.data.user.addresses.length !==0 && response.data.user.addresses[0].street !== undefined && response.data.user.addresses[0].street !== null ){
+                    setIniAddr(true)
+                }
+                else{
+                    setIniAddr(false);
+                }
             })
             .catch( errMsg => {
                 console.log('error getting order history' , errMsg)
@@ -171,48 +216,38 @@ const Account = (props) => {
                     </IconButton>
                     <div><small id="emailHelp" className="form-text text-muted">Deje en blanco si no desea modificar.</small></div>
                 </div>  
-                { accountData.addresses.length > 0 ? 
-                    accountData.addresses.map(  (item, index) => { return(
-                    <>
-                        <h5 style={{marginTop:'1rem'}}>Dirección</h5>
-                        <div>
-                            <label htmlFor="text"  className='labelForm'> Calle</label>
-                            <input type="text" value = {item.street} 
-                            className="inputFields"  onChange = { e=> updateAddrValue(e.target.value, index, 'street')}
-                            />
-                        </div>
-                        { checkErrorsArryForm('street', index) && <span style={{color:'red'}}>Ingrese una ciudad válida, como mínimo de 4 caracteres</span>}
-                        <div>
-                            <label htmlFor="text"  className='labelForm'> Ciudad</label>
-                            <input type="text" value = {item.city} onChange = { e=> updateAddrValue(e.target.value, index, 'city')} className="inputFields"  />
-                        </div>
-                        <div style={{marginTop:'1rem'}}>
-                            <label className='labelForm'>
-                                Departamento
-                                <select style={{marginTop:'1rem'}} onChange = { e=> updateAddrValue(e.target.value, index, 'state')} >
-                                <option value="Alto Paraguay" selected={ item.state ===  "Alto Paraguay"} >Alto Paraguay</option>
-                                <option value="Alto Paraná"  selected={ item.state ===  "Alto Paraná"} >Alto Paraná</option>
-                                <option value="Amambay" selected={  item.state === "Amambay"} >Amambay</option>
-                                <option value="Asunción - Capital" selected={ item.state === "Asunción - Capital" } >Asunción - Capital</option>
-                                <option value="Boquerón" selected={ item.state === "Boquerón" } >Boquerón</option>
-                                <option value="Caaguazú" selected={  item.state === "Caaguazú"} >Caaguazú</option>
-                                <option value="Caazapá" selected={  item.state === "Caazapá"} >Caazapá</option>
-                                <option value="Canindeyú" selected={ item.state ===  "Canindeyú"} >Canindeyú</option>
-                                <option value="Central" selected={ item.state === "Central" } >Central</option>
-                                <option value="Concepción" selected={ item.state === "Concepción"  } >Concepción</option>
-                                <option value="Cordillera" >Cordillera</option>
-                                <option value="Guairá" >Guairá</option>
-                                <option value="Itapúa" selected={ item.state ==="Itapúa"  } >Itapúa</option>
-                                <option value="Misiones" selected={ item.state === "Misiones" } >Misiones</option>
-                                <option value="Ñeembucú" selected={ item.state === "Ñeembucú"} >Ñeembucú</option>
-                                <option value="Paraguarí" selected={ item.state === "Paraguarí"} >Paraguarí</option>
-                                <option value="Presidente Hayes"   selected={item.state === "Presidente Hayes"} >Presidente Hayes</option>
-                                <option value="San Pedro" selected={item.state ==="San Pedro"}>San Pedro</option>
-                                </select>
-                            </label>
-                        </div>
-                    </>
-            )}) : null}
+                <div className='containerSides'>
+                <Box sx={{m:2}}>
+                    <Typography variant='h4' sx={{fontWeight:'bold', m:2} }> Dirección de envío </Typography>
+                    { iniAddr ?  <Typography variant='body1' sx={{fontWeight:'normal', m:4} }> Favor seleccionar una dirección de envío: </Typography> : <span style={{color: 'red'}}> Presione Editar para agregar una direcciòn de envío</span> }
+                    {   accountData.addresses.length > 0 ? 
+                                accountData.addresses.map(  (address, index) => {
+                                return(
+                                    <Box sx={{ minWidth: 275 }}>
+                                        <CardContent>
+                                            <Typography variant="h5" component="div">
+                                                {`Dirección ${index + 1}`}
+                                            </Typography>
+                                            
+                                            <Typography variant="body2">
+                                                Calle: {address.street}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardActions>
+                                            <Button size="small" onClick={e=> handleClickAddAddress(e, "edit", address._id, index)}>Editar</Button>
+                                            <Button size="small" onClick={e=> handleDelAddr(e, address._id)}>Quitar</Button>
+                                        </CardActions>
+                                    </Box>
+                                )
+                            } )
+                            
+                        : null  }
+                        {iniAddr ? <Button size="small" variant="contained" color="success" sx={{m:2}} onClick={ e=> handleClickAddAddress(e, "add")}>Añadir nueva</Button>  : null }
+                    </Box>
+                </div>
+                <div className='containerSides' id={showAddr}>
+                        <Address  showAddr={showAddr} setShowAddr={setShowAddr} opMode={opMode} addrID={addrID} vectorAddrIndex={vectorAddrIndex} addresses={addresses} userID={userID} isChanged={isChanged} setIsChanged={setIsChanged}/>
+                </div>
                 <button type="submit" className="btn btn-primary" style={{margin:25, backgroundColor: "#FFBD33", border:'none'}}>Modificar</button>
                 </form>
             
