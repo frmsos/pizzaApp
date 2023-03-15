@@ -27,7 +27,8 @@ const Account = (props) => {
     const [vectorAddrIndex, setVectorAddrIndex] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
     const [addresses, setAddresses] = useState({});
-
+    const [flag, setFlag] = useState(false);
+    
 
     //Funcion onsubmit: se llama al presionar el boton de modificar
 
@@ -134,8 +135,10 @@ const Account = (props) => {
                 setAddrID(addressID);
                 setVectorAddrIndex(index);
                 console.log('checkout compn addrid is',addrID)
+            
             }
         }
+        setFlag(false)
 
     }
     const handleDelAddr = (e, addrID) =>{
@@ -171,7 +174,7 @@ const Account = (props) => {
             setUserID(JSON.parse(window.localStorage.getItem('userID')));
         }
         
-    },[userID, setUserID ]);
+    },[userID, setUserID, flag, isChanged ]);
 
 
 
@@ -181,76 +184,80 @@ const Account = (props) => {
             <Box component="form" noValidate  sx={{ mt: 3 }}>
                 <Typography variant="h3" sx={{m:2, fontWeight:'bold'}}> <ManageAccountsIcon fontSize='large'/> Datos de la Cuenta</Typography>
             </Box>
+            <div id='account-page-container'>
             <form id="formModifData"  onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <label htmlFor="firstName" className='labelForm'>Nombre</label>
-                    <input type="text" value={accountData.firstName} 
-                    className="inputFields"
-                    {...register("firstName", {onChange :  e=> setAccountData({...accountData, firstName: e.target.value}),   required: true, minLength: 2, maxLength: 25 })}
-                    />
-                    {errors.firstName && <span style={{color:'red'}}>Ingrese un nombre válido, como mínimo de 2 caracteres</span>}
+                    <div>
+                        <label htmlFor="firstName" className='labelForm'>Nombre</label>
+                        <input type="text" value={accountData.firstName} 
+                        className="inputFields"
+                        {...register("firstName", {onChange :  e=> setAccountData({...accountData, firstName: e.target.value}),   required: true, minLength: 2, maxLength: 25 })}
+                        />
+                        {errors.firstName && <span style={{color:'red'}}>Ingrese un nombre válido, como mínimo de 2 caracteres</span>}
+                    </div>
+                    <div>
+                        <label htmlFor="lastName" className='labelForm'>Apellido</label>
+                        <input type="text" value={accountData.lastName}
+                        className="inputFields"
+                        {...register("lastName", {onChange :  e=> setAccountData({...accountData, lastName: e.target.value}),   required: true, minLength: 2, maxLength: 25 })}
+                        />
+                        {errors.lastName && <span style={{color:'red'}}>Ingrese un apellido válido, como mínimo de 2 caracteres</span>}
+                    </div>
+                    <div>
+                        <label htmlFor="email" className='labelForm'>Email</label>
+                        <input type="text" value={accountData.email} 
+                        className="inputFields"  
+                        {...register("email", {required: true, onChange :  e=> setAccountData({...accountData, email: e.target.value}) ,pattern: {value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,}})}
+                        />
+                        {errors.email && <span style={{color:'red'}}>Ingrese una dirección de correo válida</span>}
+                    </div>
+                    <div>
+                        <label htmlFor="password"  className='labelForm'>Contraseña</label>
+                        <input autoComplete='false' type= {showPassword ? "text" : "password"} placeholder='Ingrese la nueva contraseña' onChange = { e=>  updatePass(e)} className="inputFields"  
+                        
+                        />
+                        <IconButton onClick={handleClickPassword}>                                   
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                        <div><small id="emailHelp" className="form-text text-muted">Deje en blanco si no desea modificar.</small></div>
+                    </div>  
+                    <button type="submit" className="btn btn-primary" style={{margin:25, backgroundColor: "#FFBD33", border:'none'}}>Modificar</button>
+                    </form>
+                    <div className='addr-component' id={showAddr} style={{marginLeft:60}}>
+                    <div className='containerSides'>
+                    <Box sx={{m:2}}>
+                        <Typography variant='h4' sx={{fontWeight:'bold', m:2} }> Dirección de envío </Typography>
+                        { iniAddr ?  <Typography variant='body1' sx={{fontWeight:'normal', m:4} }> Favor seleccionar una dirección de envío: </Typography> : <span style={{color: 'red'}}> Presione Editar para agregar una direcciòn de envío</span> }
+                        {   accountData.addresses.length > 0 ? 
+                                    accountData.addresses.map(  (address, index) => {
+                                    return(
+                                        <Box sx={{ minWidth: 275 }}>
+                                            <CardContent>
+                                                <Typography variant="h5" component="div">
+                                                    {`Dirección ${index + 1}`}
+                                                </Typography>
+                                                
+                                                <Typography variant="body2">
+                                                    Calle: {address.street}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardActions>
+                                                <Button size="small" onClick={e=> handleClickAddAddress(e, "edit", address._id, index)}>Editar</Button>
+                                                <Button size="small" onClick={e=> handleDelAddr(e, address._id)}>Quitar</Button>
+                                            </CardActions>
+                                        </Box>
+                                    )
+                                } )
+                                
+                            : null  }
+                            {iniAddr ? <Button size="small" variant="contained" color="success" sx={{m:2}} onClick={ e=> handleClickAddAddress(e, "add")}>Añadir nueva</Button>  : null }
+                        </Box>
+                    </div>
+                    <Address showAddr={showAddr} setShowAddr={setShowAddr} opMode={opMode} addrID={addrID} vectorAddrIndex={vectorAddrIndex} 
+                        addresses={ accountData.addresses} userID={userID} isChanged={isChanged} setIsChanged={setIsChanged} flag={flag} setFlag={setFlag}/>
                 </div>
-                <div>
-                    <label htmlFor="lastName" className='labelForm'>Apellido</label>
-                    <input type="text" value={accountData.lastName}
-                    className="inputFields"
-                    {...register("lastName", {onChange :  e=> setAccountData({...accountData, lastName: e.target.value}),   required: true, minLength: 2, maxLength: 25 })}
-                    />
-                    {errors.lastName && <span style={{color:'red'}}>Ingrese un apellido válido, como mínimo de 2 caracteres</span>}
-                </div>
-                <div>
-                    <label htmlFor="email" className='labelForm'>Email</label>
-                    <input type="text" value={accountData.email} 
-                    className="inputFields"  
-                    {...register("email", {required: true, onChange :  e=> setAccountData({...accountData, email: e.target.value}) ,pattern: {value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,}})}
-                    />
-                    {errors.email && <span style={{color:'red'}}>Ingrese una dirección de correo válida</span>}
-                </div>
-                <div>
-                    <label htmlFor="password"  className='labelForm'>Contraseña</label>
-                    <input autoComplete='false' type= {showPassword ? "text" : "password"} placeholder='Ingrese la nueva contraseña' onChange = { e=>  updatePass(e)} className="inputFields"  
-                    
-                    />
-                    <IconButton onClick={handleClickPassword}>                                   
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                    <div><small id="emailHelp" className="form-text text-muted">Deje en blanco si no desea modificar.</small></div>
-                </div>  
-                <div className='containerSides'>
-                <Box sx={{m:2}}>
-                    <Typography variant='h4' sx={{fontWeight:'bold', m:2} }> Dirección de envío </Typography>
-                    { iniAddr ?  <Typography variant='body1' sx={{fontWeight:'normal', m:4} }> Favor seleccionar una dirección de envío: </Typography> : <span style={{color: 'red'}}> Presione Editar para agregar una direcciòn de envío</span> }
-                    {   accountData.addresses.length > 0 ? 
-                                accountData.addresses.map(  (address, index) => {
-                                return(
-                                    <Box sx={{ minWidth: 275 }}>
-                                        <CardContent>
-                                            <Typography variant="h5" component="div">
-                                                {`Dirección ${index + 1}`}
-                                            </Typography>
-                                            
-                                            <Typography variant="body2">
-                                                Calle: {address.street}
-                                            </Typography>
-                                        </CardContent>
-                                        <CardActions>
-                                            <Button size="small" onClick={e=> handleClickAddAddress(e, "edit", address._id, index)}>Editar</Button>
-                                            <Button size="small" onClick={e=> handleDelAddr(e, address._id)}>Quitar</Button>
-                                        </CardActions>
-                                    </Box>
-                                )
-                            } )
-                            
-                        : null  }
-                        {iniAddr ? <Button size="small" variant="contained" color="success" sx={{m:2}} onClick={ e=> handleClickAddAddress(e, "add")}>Añadir nueva</Button>  : null }
-                    </Box>
-                </div>
-                <div className='containerSides' id={showAddr}>
-                        <Address  showAddr={showAddr} setShowAddr={setShowAddr} opMode={opMode} addrID={addrID} vectorAddrIndex={vectorAddrIndex} addresses={addresses} userID={userID} isChanged={isChanged} setIsChanged={setIsChanged}/>
-                </div>
-                <button type="submit" className="btn btn-primary" style={{margin:25, backgroundColor: "#FFBD33", border:'none'}}>Modificar</button>
-                </form>
-            
+            </div>
+
+
         </div>
     );
 }

@@ -55,6 +55,7 @@ export default function Gmap(props) {
             } )
             .catch( (errorMsg) =>{
                 console.log('errrrorrr log', errorMsg)
+                props.setIsChanged(!props.isChanged)
             }  )
         }
         else{
@@ -70,11 +71,13 @@ export default function Gmap(props) {
             .then( (response) => {
                 console.log('onsub', response.data);
                 props.setShowAddr("doNotShowAddr")
+                props.setIsChanged(!props.isChanged)
                 //alert('afae')
 
             } )
             .catch( (errorMsg) =>{
                 console.log('errrrorrr log', errorMsg)
+                props.setIsChanged(!props.isChanged)
             }  )
         }
     }
@@ -100,24 +103,27 @@ export default function Gmap(props) {
             setSelected({ lat, lng });
             setCenter({lat:lat, lng:lng})
             setAddr(address);
-            console.log('address is: ', selected);
+            console.log('address is: ', addr);
         };
 
         useEffect( ()=>{
-            console.log('in useff in gmap component', isEditMode)
+            
             if(isEditMode){
-                console.log('gmap is edit mode', isEditMode, (props.addresses[props.vectorAddrIndex].lat),  (props.addresses[props.vectorAddrIndex].lng));
-                //setAddr(props.addresses[props.vectorAddrIndex].street)
-               // 
+                console.log('in useff in gmap component flag, addr', props.flag, props.addresses[props.vectorAddrIndex].street)
+                //console.log('gmap is edit mode', isEditMode, props.flag, props.addresses[props.vectorAddrIndex].lat);
+                
+                //evitar loop infinito render
                 if(!props.flag){
+                    console.log('test',props.addresses[props.vectorAddrIndex].lat )
+                    setAddr(props.addresses[props.vectorAddrIndex].street)
                     setCenter({lat:props.addresses[props.vectorAddrIndex].lat, lng:props.addresses[props.vectorAddrIndex].lng});
                     setSelected({lat:props.addresses[props.vectorAddrIndex].lat, lng:props.addresses[props.vectorAddrIndex].lng});
-                    setAddr(props.addresses[props.vectorAddrIndex].street)
+                   // setAddr(props.addresses[props.vectorAddrIndex].street)
                     props.setFlag(true);
                 }
 
             }
-        },[])
+        },[props.isChanged])
     
         return (
             <Combobox onSelect={handleSelect} style={{padding:10, display:'block'}}>

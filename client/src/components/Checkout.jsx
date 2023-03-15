@@ -41,6 +41,8 @@ const Checkout = (props) => {
     const [iniAddr, setIniAddr] = useState(false);
     const navigate = useNavigate();
     const [isChanged, setIsChanged] = useState(false);
+    const [flag, setFlag] = useState(false);
+
 
     //funciones que manejan el cuadro de dialogo que se abre si es que no se completan los campos obligatorios.
     const handleClickOpen = () => {
@@ -70,6 +72,7 @@ const Checkout = (props) => {
                 console.log('checkout compn addrid is',addrID)
             }
         }
+        setFlag(false);
 
     }
     //funcion para comparar el indice del vector con la direccion seleccionada por el usuario contra el indice del vector iterando
@@ -262,7 +265,8 @@ const Checkout = (props) => {
                                     </Box>
                             </div>
                         <div className='containerSides' id={showAddr}>
-                            <Address  showAddr={showAddr} setShowAddr={setShowAddr} opMode={opMode} addrID={addrID} vectorAddrIndex={vectorAddrIndex} addresses={addresses} userID={userID} cart={cart} setCard={setCart} isChanged={isChanged} setIsChanged={setIsChanged}/>
+                            <Address  showAddr={showAddr} setShowAddr={setShowAddr} opMode={opMode} addrID={addrID} vectorAddrIndex={vectorAddrIndex} addresses={addresses} userID={userID} 
+                            cart={cart} setCard={setCart} isChanged={isChanged} setIsChanged={setIsChanged} flag={flag} setFlag={setFlag}/>
                         </div>
                     </div>
                     : null}

@@ -10,12 +10,12 @@ const Address = (props) => {
     const [finalAddr, setFinalAddr] = useState('tete');
     const [lat, setLat] = useState(null);
     const [lng, setLng] = useState(null);
-    const [flag, setFlag] = useState(false);
     
 
     
     useEffect ( () =>{
         setIsEditMode(props.opMode === 'edit')
+        console.log('useeff in address comp flag', props.flag)
     },[ props.opMode, props.addrID, isEditMode, props.isChanged]
 
     )
@@ -23,7 +23,7 @@ const Address = (props) => {
     return (
         <div>
             <Gmap finalAddr={finalAddr} setFinalAddr={setFinalAddr} setLat={setLat} setLng={setLng} isEditMode={isEditMode} userID={props.userId} addrID={props.addrID} 
-            vectorAddrIndex={props.vectorAddrIndex} addresses={props.addresses} flag={flag} setFlag={setFlag} isChanged={props.isChanged}  setIsChanged={props.setIsChanged}/>
+            vectorAddrIndex={props.vectorAddrIndex} addresses={props.addresses} flag={props.flag} setFlag={props.setFlag} isChanged={props.isChanged}  setIsChanged={props.setIsChanged}/>
         </div>
     )
 }
