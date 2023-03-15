@@ -11,7 +11,7 @@ module.exports = {
             const newUser = await User.create(req.body);
             console.log('new usewr', newUser)
             const userToken = jwt.sign({_id:newUser._id}, SECRET)
-            res.status(201).cookie('userToken', userToken, {httpOnly:true, expires:new Date(Date.now() + 60000)})
+            res.status(201).cookie('userToken', userToken, {httpOnly:true, expires:new Date(Date.now() + 7200000)})
             .json({successMessage:"Usuario registrado ", id:newUser._id})
             //console.log("userto", userToken)
         }catch(error){
@@ -28,15 +28,24 @@ module.exports = {
         }
         try{
             const validPass = await bcrypt.compare(req.body.password, user.password )
+<<<<<<< HEAD
             console.log('loginUser: pass valida')
+=======
+            console.log(validPass, " PASSWORD VALIDA")
+>>>>>>> googlemaptest
             if(!validPass){
                 console.log('loginUser try: pass invalido' ,validPass);
 		res.status(401).json({error: "Incorrect credentials, try again..."})
             }else{
                 const userToken = jwt.sign({_id:user._id}, SECRET)
+<<<<<<< HEAD
                 console.log('loginUser: pass valido', userToken)
 		console.log('check SECRET loginUser', SECRET)    
                 res.status(201).cookie('userToken', userToken, {httpOnly:true, expires:new Date(Date.now() + 1800000)}).json({successMessage:"User login OK ", id: user._id})
+=======
+                console.log('check SECRET loginUser', SECRET)
+                res.status(201).cookie('userToken', userToken, {httpOnly:false, expires:new Date(Date.now() + 7200000)}).json({successMessage:"User login OK ", id: user._id})
+>>>>>>> googlemaptest
             }
         }catch(error){
 	    console.log('loginUser catch:', error);
@@ -112,10 +121,21 @@ module.exports = {
         console.log('test')
     },
     verUser: (req, res) =>{
+        console.log('validation getUser func')
  
         res.status(201).json( {user : 'test successful' })
-
-
-    }
+    },
+    deleteAddressbyID: async (req, res)=>{
+        console.log('delete add by id', req.params.id);
+        const user = await User.findOneAndUpdate(  
+        { _id: req.params.id},
+        { $pull: {addresses:{ _id:req.params.addrid } }}
+        )
+        try{
+            res.status(201).json( {user : user })
+        }
+        catch(error){
+            res.status(400).json({error: error})
+        }},
     
 }        

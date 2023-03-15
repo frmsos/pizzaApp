@@ -14,12 +14,12 @@ const orderSchema = new mongoose.Schema({
                     type: String,
                     required: function() { return(this.typeOrder === 'Delivery'); } 
                 },
-                city: {
-                    type: String,
+                lat: {
+                    type: Number,
                     required: function() { return(this.typeOrder === 'Delivery'); } 
                 },
-                state: {
-                    type: String,
+                lng: {
+                    type: Number,
                     required: function() { return(this.typeOrder === 'Delivery'); } 
                 },
                 _id : {
@@ -32,19 +32,19 @@ const orderSchema = new mongoose.Schema({
         {
             amount: {
                 type: Number,
-                required: [true, "Debe ingresar direccion de residencia"],
+                required: [true, "Debe ingresar una cantidad de pizzas"],
             },
             crust: {
                 type: String,
-                required: [true, "Debe ingresar su ciudad de residencia"]
+                required: [true, "Debe ingresar el tipo de masa"]
             },
             size: {
                 type: String,
-                required: [true, "Debe ingresar su departamento de residencia"]
+                required: [true, "Debe ingresar el size de la pizza"]
             },
             topping: {
                 type: String,
-                required: [true, "Debe ingresar su departamento de residencia"]
+                required: [true, "Debe ingresar el sabor de la pizza"]
             }
         }
     ]
