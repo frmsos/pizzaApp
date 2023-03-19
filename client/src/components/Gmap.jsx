@@ -24,7 +24,7 @@ export default function Gmap(props) {
     const [addr, setAddr] = useState(null);
     const {isEditMode} = props;
     const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyBDFQYW8P-FqcBBtncBaqwP8V8nKy5Ysf8",
+        googleMapsApiKey: process.env.local.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
         libraries: ["places"],
     });
 
